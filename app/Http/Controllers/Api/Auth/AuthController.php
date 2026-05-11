@@ -20,12 +20,17 @@ class AuthController extends Controller
             'first_name'    => $request->first_name,
             'last_name'    => $request->last_name,
             'phone'    => $request->phone,
+            'role'     => 'in:client,owner,admin',
         ]);
+
+
+        // Set default role to 'client' if not provided in the request
+        $userData = array_merge($user, ['role' => $user['role'] ?? 'client']);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'user'  => $user,
+            'user'  => $userData,
             'token' => $token,
         ], 201);
     }
@@ -44,6 +49,7 @@ class AuthController extends Controller
         return response()->json([
             'user'  => $user,
             'token' => $token,
+            'role'  => $user->role,
         ]);
     }
 
